@@ -13,7 +13,6 @@ def create_app(test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
     from app.models.book import Book
-    from .routes import hello_world_bp , books_bp
-    app.register_blueprint(hello_world_bp)
+    from .routes import books_bp
     app.register_blueprint(books_bp)
     return app
