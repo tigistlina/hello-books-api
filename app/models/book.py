@@ -6,3 +6,11 @@ class Book(db.Model):
     description = db.Column(db.String)
     def to_string(self):
         return f"{self.id}: {self.title} Description: {self.description}"
+
+    def to_dict(self):
+        book_as_dict = {}
+        book_as_dict["id"] = self.id
+        book_as_dict["title"] = self.title
+        book_as_dict["description"] = self.description
+
+        return book_as_dict

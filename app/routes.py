@@ -20,22 +20,16 @@ def validate_book(book_id):
 # route functions
 @books_bp.route("",methods=["GET"])
 def read_all_books():
-    books_response = []
     title_query = request.args.get("title")
 
     if title_query is not None:
         books = Book.query.filter_by(title=title_query)
     else:
         books = Book.query.all()
-        
+
+    books_response = []
     for book in books:
-        books_response.append(
-            {
-            "id": book.id,
-            "title": book.title,
-            "description": book.description
-        }
-        )
+        books_response.append(book.to_dict())
     return jsonify(books_response), 200
 
 
@@ -56,17 +50,10 @@ def create_book():
     )
 
 
-
 @books_bp.route("/<book_id>", methods=["GET"])
 def read_one_book(book_id):
     book = validate_book(book_id)
-
-    return {
-        "id": book.id,
-        "title": book.title,
-        "description": book.description
-    }
-
+    return book.to_dict()
 
 @books_bp.route("/<book_id>", methods=["PUT"])
 def update_book(book_id):
