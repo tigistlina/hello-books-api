@@ -132,7 +132,7 @@ def test_create_one_book_no_description(client):
     assert response.status_code == 400
     assert "Invalid Request" in response.get_data(as_text=True)
 
-def test_create_one_book_with_extra_keys(client, two_saved_books):
+def test_create_one_book_with_extra_keys(client):
     # Arrange
     test_data = {
         "extra": "some stuff",
@@ -143,7 +143,7 @@ def test_create_one_book_with_extra_keys(client, two_saved_books):
 
     # Act
     response = client.post("/books", json=test_data)
-    response_body = response.get_json()
+    response_body = response.get_data(as_text=True)
 
     # Assert
     assert response.status_code == 201
