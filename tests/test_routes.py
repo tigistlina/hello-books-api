@@ -1,4 +1,5 @@
 import pytest
+from app.models.book import Book
 
 def test_get_all_books_with_no_records(client):
     # Act
@@ -128,3 +129,90 @@ def test_create_one_book_with_extra_keys(client, two_saved_books):
     # Assert
     assert response.status_code == 201
     assert response_body == "Book New Book successfully created"
+
+def test_validate_book_with_valid_id(client, two_saved_books):
+    # Arrange
+    book_id = 1
+
+    # Act
+    response = client.get(f"/books/{book_id}")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 200
+    assert response_body == {
+        "id": 1,
+        "title": "Ocean Book",
+        "description": "watr 4evr"
+    }
+
+def test_validate_book_with_invalid_id(client, two_saved_books):
+    # Arrange
+    book_id = "cat"
+
+    # Act
+    response = client.get(f"/books/{book_id}")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 400
+    assert response_body == {"message": "book cat invalid"}
+
+def test_validate_book_with_missing_record(client, two_saved_books):
+    # Arrange
+    book_id = 3
+
+    # Act
+    response = client.get(f"/books/{book_id}")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 404
+    assert response_body == {"message": "book 3 not found"}
+
+def test_update_book_with_extra_keys(client, two_saved_books):
+    # Arrange
+    book_id = 1
+    data = {
+        "title": "Updated Book",
+        "description": "New description",
+        "extra_key": "Extra Value"
+    }
+
+    # Act
+    response = client.put(f"/books/{book_id}", json=data)
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 200
+    assert response_body == "Book #1 successfully updated"
+
+def test_update_book_without_title(client, two_saved_books):
+    # Arrange
+    book_id = 1
+    data = {
+        "description": "New description"
+    }
+
+    # Act
+    response = client.put(f"/books/{book_id}", json=data)
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 400
+    assert response_body == {"message": "title is required"}
+
+def test_update_book_without_description(client, two_saved_books):
+    # Arrange
+    book_id = 1
+    data = {
+        "title": "Updated Book"
+    }
+
+    # Act
+    response = client.put(f"/books/{book_id}", json=data)
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 400
+    assert response_body == {"message": "description is required"}
